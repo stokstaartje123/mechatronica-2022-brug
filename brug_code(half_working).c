@@ -184,11 +184,6 @@ int main(void)
     TimersInit();
     PinsInit();
 
-    int ingedrukt = 0;
-    int ingedrukt1 = 0;
-    int ingedrukt2 = 0;
-    int ingedrukt3 = 0;
-
     while(1) {
         motorStand(1, 0);
         veiligheid(1);
