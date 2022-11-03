@@ -39,7 +39,6 @@ static inline void PinsInit(void)
 {
     DDRA |= (1 << PA6);     //28 in1
     DDRA |= (1 << PA7);     //29 in2
-    DDRH |= (1 << PH6);     //9  conformatie led
 
     DDRC |= (1 << PC4);     //33  led3 setgroen
     DDRC |= (1 << PC5);     //32  led4 setrood
@@ -56,9 +55,6 @@ static inline void PinsInit(void)
 
     DDRB &= ~(1 << PB5);    //11  resume knop
     PORTB |= (1 << PB5);    //11  pull-up resistor
-
-    DDRH &= ~(1 << PH5);    //8  confirm knop
-    PORTH |= (1 << PH5);    //8  pull-up resistor
 
     PCICR |= (1<< PCIE0);   //10 noodknop + interrupt
     PCMSK0 |= (1<<PCINT4);
@@ -154,16 +150,6 @@ static inline void veiligheid(uint8_t open)
     }
 }
 
-static inline void accepteren(uint8_t i)
-{
-    if(i)
-    {
-        PORTH |= (1 << PH6);
-        while((PINH & (1 << PH5)));
-        PORTH &= ~(1 << PH6);
-    }
-}
-
 int main(void){
 
     Timer3Init();
@@ -179,8 +165,6 @@ int main(void){
     {
         if((PINF & (1 << PF0)) == 0)
            {
-            accepteren(1);
-
             veiligheid(1);
             motorStand(1,0);
 
@@ -191,9 +175,7 @@ int main(void){
             while((PINF & (1 << PF1)));
             _delay_ms(50);
             while((PINF & (1 << PF1)) == 0);
-
-            accepteren(1);
-
+            
             bootleds(0);
             motorStand(0,1);
 
@@ -203,8 +185,6 @@ int main(void){
 
         if((PINF & (1 << PF1)) == 0)
            {
-            accepteren(1);
-
             veiligheid(1);
             motorStand(1,0);
 
@@ -215,8 +195,6 @@ int main(void){
             while((PINF & (1 << PF0)));
             _delay_ms(50);
             while((PINF & (1 << PF0)) == 0);
-
-            accepteren(1);
 
             bootleds(0);
             motorStand(0,1);
