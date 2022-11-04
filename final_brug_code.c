@@ -26,7 +26,7 @@ static inline void Timer3Init(void)
 static inline void Timer4Init(void)
 {
     //Timer 4, leds, mode 12, prescaler 1
-    TCCR4A |= (1<<COM4A1) | (1<<COM4B1) | (1<<WGM41);
+    TCCR4A |= (1<<COM4A1) | (1<<COM4B1) | (1<<COM4B0 ) | (1<<WGM41);
     TCCR4B |= (1<<WGM43) | (1<<WGM42);// | (1<<CS42);
     ICR4 = FREQ4;
     OCR4A = 62499/2;
@@ -64,10 +64,15 @@ static inline void PinsInit(void)
 
 ISR(PCINT0_vect)
 {
-    PORTA &= ~(1 << PA6);
-    PORTA &= ~(1 << PA7);
-    while((PINB & (1 << PB5)));
+    if((PINB & (1 << PB4)))
+    {
+        PORTA &= ~(1 << PA6);
+        PORTA &= ~(1 << PA7);
+        while((PINB & (1 << PB5)));
+    }
+
 }
+
 
 static inline void slagboom1(uint8_t dicht)
 {
@@ -138,15 +143,22 @@ static inline void veiligheid(uint8_t open)
     if(open)
     {
         TCCR4B |= (1<<CS42);
+        DDRH |= (1 << PH3); //6 knipperset1
+        DDRH |= (1 << PH4); //7 knipperset2
+        //_delay_ms(1500);
         slagboom1(1);
 
     }
     else
     {
         slagboom1(0);
+        //_delay_ms(1500);
         TCCR4B &= ~(1<<CS42);
+        DDRH &= ~(1 << PH3); //6 knipperset1
+        DDRH &= ~(1 << PH4); //7 knipperset2
     }
 }
+
 
 int main(void){
 
@@ -170,10 +182,10 @@ int main(void){
             bootleds(1);
 
             //wachten totdat het voorbij de tweede is
-            while((PINF & (1 << PF1)));
-            _delay_ms(50);
             while((PINF & (1 << PF1)) == 0);
-            
+            //_delay_ms(50);
+            while(PINF & (1 << PF1));
+
             bootleds(0);
             motorStand(0,1);
 
@@ -190,9 +202,9 @@ int main(void){
             bootleds(1);
 
             //wachten totdat het voorbij de tweede is
-            while((PINF & (1 << PF0)));
-            _delay_ms(50);
             while((PINF & (1 << PF0)) == 0);
+            //_delay_ms(50);
+            while(PINF & (1 << PF0));
 
             bootleds(0);
             motorStand(0,1);
