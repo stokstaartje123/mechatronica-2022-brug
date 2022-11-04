@@ -44,7 +44,7 @@ static inline void PinsInit(void)
     DDRC |= (1 << PC5);     //32  led4 setrood
 
     DDRF &= ~(1 << PF0);    //A0  sensor 1
-    //PORTF |= (1 << PF0);    //A0  pull-up resistor
+    PORTF |= (1 << PF0);    //A0  pull-up resistor
     DDRF &= ~(1 << PF1);    //A1  sensor 2
     PORTF |= (1 << PF1);    //A1  pull-up resistor
 
@@ -138,14 +138,12 @@ static inline void veiligheid(uint8_t open)
     if(open)
     {
         TCCR4B |= (1<<CS42);
-        _delay_ms(1500);
         slagboom1(1);
 
     }
     else
     {
         slagboom1(0);
-        _delay_ms(1500);
         TCCR4B &= ~(1<<CS42);
     }
 }
